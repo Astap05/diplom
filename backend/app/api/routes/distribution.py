@@ -261,7 +261,18 @@ def _detect_route_cols(df: pd.DataFrame) -> tuple[str | None, str | None]:
 
 
 def _extract_history_rows_from_excel(path: str) -> pd.DataFrame:
-    raw = pd.read_excel(path, sheet_name=0)
+    try:
+        # .xls (ваши выгрузки) читается через xlrd, .xlsx — через openpyxl.
+        # При engine=None pandas сам выберет подходящий движок по расширению,
+        # если нужный пакет установлен в окружении.
+        raw = pd.read_excel(path, sheet_name=0, engine=None)
+    except Exception:
+        ext = os.path.splitext(path)[1].lower()
+        # Резервный путь с явным движком помогает при нестандартных окружениях.
+        if ext == ".xls":
+            raw = pd.read_excel(path, sheet_name=0, engine="xlrd")
+        else:
+            raw = pd.read_excel(path, sheet_name=0, engine="openpyxl")
     cols = [str(c) for c in raw.columns]
 
     airline_col = _find_col(cols, "Название АК")

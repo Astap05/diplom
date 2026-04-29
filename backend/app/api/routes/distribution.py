@@ -62,6 +62,38 @@ def _forecast_profile_kept(
     return True
 
 
+def _resolve_default_forecast_files() -> list[str]:
+    """
+    На локалке исторически использовался Windows-путь C:\\...\\Выгрузки\\*.xls.
+    Для облака (Linux/Render) ищем файлы через FORECAST_GLOB или типовые относительные пути.
+    """
+    env_glob = (os.getenv("FORECAST_GLOB") or "").strip()
+    candidates: list[str] = []
+    if env_glob:
+        candidates.append(env_glob)
+    else:
+        candidates.extend(
+            [
+                # Старый дефолт (локальный Windows)
+                DEFAULT_FORECAST_GLOB,
+                # Относительно backend/ (обычный cwd на Render при Root Directory=backend)
+                "./Выгрузки/*.xls",
+                "../Выгрузки/*.xls",
+                # Относительно расположения этого файла
+                str((os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../..", "Выгрузки", "*.xls")))),
+                str((os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../..", "Выгрузки", "*.xls")))),
+            ]
+        )
+
+    files: list[str] = []
+    for pattern in candidates:
+        files.extend(glob.glob(pattern))
+
+    # stable unique order
+    uniq = sorted({os.path.abspath(p) for p in files if os.path.exists(p)})
+    return uniq
+
+
 def _parse_day(s: str) -> datetime:
     try:
         return datetime.strptime(s.strip(), "%Y-%m-%d")
@@ -591,10 +623,7 @@ def forecast_options(
     Возвращает список АК и номеров рейсов из текущих выгрузок.
     Используется в модалке распределения для точечного исключения рейсов.
     """
-    if os.path.isdir(os.path.dirname(DEFAULT_FORECAST_GLOB)):
-        source_files = sorted(glob.glob(DEFAULT_FORECAST_GLOB))
-    else:
-        source_files = []
+    source_files = _resolve_default_forecast_files()
     if not source_files:
         return []
 
@@ -983,11 +1012,16 @@ def _run_forecast_distribution(body: DistributionRunRequest, db: Session) -> Dis
 
     # Выбор файлов источника
     if body.forecast_source_files:
-        source_files = [p for p in body.forecast_source_files if p and os.path.exists(p)]
+        source_files = [os.path.abspath(p) for p in body.forecast_source_files if p and os.path.exists(p)]
     else:
-        source_files = sorted(glob.glob(DEFAULT_FORECAST_GLOB))
+        source_files = _resolve_default_forecast_files()
     if not source_files:
-        raise HTTPException(422, "Не найдены файлы источника для прогноза (forecast_source_files/Выгрузки)")
+        raise HTTPException(
+            422,
+            "Не найдены файлы источника для прогноза. "
+            "Передайте forecast_source_files в запросе или задайте FORECAST_GLOB "
+            "(например '../Выгрузки/*.xls' при Root Directory=backend).",
+        )
 
     frames: list[pd.DataFrame] = []
     for p in source_files:

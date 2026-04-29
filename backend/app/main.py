@@ -41,8 +41,11 @@ async def lifespan(app: FastAPI):
     Для SQLite при старте создаём файл БД и таблицы — так БД сразу готова к работе.
     Для PostgreSQL не создаём таблицы на старте, чтобы не зависать при недоступном сервере.
     """
+    # Создаём таблицы и сидируем нормы для всех поддерживаемых БД.
+    # Для PostgreSQL при недоступности хоста create_all упадёт быстро
+    # (в database.py задан connect_timeout), без бесконечного зависания.
+    Base.metadata.create_all(bind=engine)
     if get_settings().DATABASE_URL.startswith("sqlite"):
-        Base.metadata.create_all(bind=engine)
         _sqlite_add_column_if_missing("allocations", "original_resource_id", "INTEGER")
         # Удаляем устаревшие данные по багажным лентам (модель каруселей снята).
         try:
@@ -57,12 +60,12 @@ async def lifespan(app: FastAPI):
                 conn.execute(text("DROP TABLE IF EXISTS baggage_norms"))
         except Exception:
             pass
-        db = SessionLocal()
-        try:
-            seed_checkin_norms(db)
-            seed_gate_norms(db)
-        finally:
-            db.close()
+    db = SessionLocal()
+    try:
+        seed_checkin_norms(db)
+        seed_gate_norms(db)
+    finally:
+        db.close()
     yield
 
 

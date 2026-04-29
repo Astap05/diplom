@@ -22,12 +22,8 @@ npm run dev
 
 ## Данные
 
-- По умолчанию используются **моковые данные** (см. `src/lib/mockData.ts`), чтобы проверить UI без backend.
-- Чтобы подключаться к API: в корне `frontend` создайте `.env.local`:
-  ```
-  NEXT_PUBLIC_API_URL=http://localhost:8000
-  NEXT_PUBLIC_USE_MOCK=false
-  ```
+- **Моковые данные** (`src/lib/mockData.ts`), если не задан `NEXT_PUBLIC_API_URL` — удобно крутить UI без backend.
+- Чтобы подключаться к API: в корне `frontend` создайте `.env.local` с `NEXT_PUBLIC_API_URL=http://localhost:8000` (достаточно одной строки; моки тогда отключатся). Явно `NEXT_PUBLIC_USE_MOCK=true` принудительно включит демо даже при API.
   Запустите backend (`cd ../backend && uvicorn app.main:app --reload`), затем обновите страницу дашборда.
 
 ## Маппинг backend → таймлайн

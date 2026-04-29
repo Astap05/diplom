@@ -19,7 +19,9 @@ import {
 import { mockResources, mockAllocations, mockConflicts } from "@/lib/mockData";
 import type { Resource, AllocationForDashboard, AllocationConflict } from "@/lib/types";
 
-const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK !== "false";
+// Никогда не включаем моки "автоматом": только явный флаг.
+// Это исключает ситуацию, когда на проде внезапно показывается demo-датасет.
+const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK === "true";
 const PRELOAD_DAYS_BEFORE = 2;
 const PRELOAD_DAYS_AFTER = 2;
 

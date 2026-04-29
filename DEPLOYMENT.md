@@ -43,6 +43,7 @@
    | `ARRIVAL_XML_PATH`, `DEPARTURE_XML_PATH` | см. пояснение ниже — **в типичном случае не задавать** |
 
    | `FORECAST_GLOB` | путь-маска к историческим Excel для прогноза в `/distribution/run`, например `../Выгрузки/*.xls` при Root `backend` |
+   | `FORECAST_MAX_SOURCE_FILES` | сколько последних файлов из `FORECAST_GLOB` брать в расчёт (рекомендуется `1` или `2` на Render Free) |
 
    **Про XML (не путать с «Выгрузками»):** в Render эти переменные **не обязательны**. Нужны только два файла расписания в формате XML аэропорта (`arrival_SPP_ru.xml`, `departure_SPP_ru.xml`), которые вы уже используете для импорта. Положите их в репозиторий (удобнее всего в `backend/`, как в §0) — приложение найдёт их по умолчанию. Переменные `ARRIVAL_XML_PATH` / `DEPARTURE_XML_PATH` задавайте только если файлы переименованы или лежат в подпапке, например `data/arrival.xml` (путь относительно каталога `backend/` или корня репо — см. `_resolve_path` в `backend/app/services/xml_parser.py`).
 

@@ -47,6 +47,10 @@ FORECAST_MIN_P_ALL_WITHOUT_RECENT = 0.18
 # Жёстко: без исключений — иначе в Excel остаются строки с p_all 0.06…0.09 за счёт «сильного недавнего».
 FORECAST_MIN_P_ALL = 0.18
 FORECAST_RULES_VERSION = "2026-03-28-strict_p_all_p_eff_0.18"
+try:
+    FORECAST_MAX_SOURCE_FILES = max(1, int(os.getenv("FORECAST_MAX_SOURCE_FILES", "2")))
+except Exception:
+    FORECAST_MAX_SOURCE_FILES = 2
 
 # TIME_SHIFT_HOURS: app.airport_time (единая константа для расписания и поломок стоек)
 
@@ -91,6 +95,10 @@ def _resolve_default_forecast_files() -> list[str]:
 
     # stable unique order
     uniq = sorted({os.path.abspath(p) for p in files if os.path.exists(p)})
+    # На free Render ограничиваем количество файлов по умолчанию, иначе pandas/xls
+    # может выбить процесс по памяти.
+    if FORECAST_MAX_SOURCE_FILES > 0:
+        uniq = uniq[-FORECAST_MAX_SOURCE_FILES:]
     return uniq
 
 

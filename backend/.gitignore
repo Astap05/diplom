@@ -1,0 +1,21 @@
+# SQLite DB (локальная разработка)
+airport_rms.db
+*.db
+
+# Env
+.env
+.env.local
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo

@@ -1,0 +1,195 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --dispatch-bg: #0f1419;
+  --dispatch-surface: #1a2332;
+  --dispatch-border: #2d3a4d;
+  --dispatch-muted: #64748b;
+  --dispatch-accent: #3b82f6;
+  --dispatch-delayed: #f59e0b;
+  --dispatch-conflict: #ef4444;
+}
+
+body {
+  @apply bg-dispatch-bg text-gray-100 antialiased;
+}
+
+/* Стили для vis-timeline (под тёмную тему) */
+.vis-timeline {
+  border-color: var(--dispatch-border) !important;
+  background: var(--dispatch-surface) !important;
+}
+.vis-panel.vis-background {
+  background: var(--dispatch-surface) !important;
+}
+.vis-panel.vis-center,
+.vis-panel.vis-left,
+.vis-panel.vis-right {
+  border-color: var(--dispatch-border) !important;
+  background: var(--dispatch-surface) !important;
+}
+.vis-item {
+  border-radius: 4px;
+  border-width: 1px;
+}
+.vis-labelset .vis-label {
+  background: var(--dispatch-surface) !important;
+  border-color: var(--dispatch-border) !important;
+  color: #e2e8f0 !important;
+}
+.vis-time-axis .vis-text {
+  color: var(--dispatch-muted) !important;
+}
+.vis-grid.vis-vertical {
+  border-color: var(--dispatch-border) !important;
+}
+.vis-grid.vis-horizontal {
+  border-color: var(--dispatch-border) !important;
+}
+
+/* Цвета блоков аллокаций на таймлайне: синий — норма, оранжевый — задержка, красный — конфликт */
+.vis-item.item-normal {
+  background-color: #3b82f6 !important;
+  border-color: #2563eb !important;
+}
+.vis-item.item-delayed {
+  background-color: #f59e0b !important;
+  border-color: #d97706 !important;
+}
+.vis-item.item-conflict {
+  background-color: #ef4444 !important;
+  border-color: #dc2626 !important;
+}
+.vis-item.item-cancelled {
+  background-color: #94a3b8 !important;
+  border-color: #64748b !important;
+}
+
+/* Контент внутри прямоугольников (важная инфа прямо на диаграмме) */
+.vis-item .vis-item-content {
+  padding: 6px 8px !important;
+  white-space: normal !important;
+}
+.tl-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.05;
+  font-size: 11px;
+  color: #0b1220; /* на ярких блоках читается лучше тёмный текст */
+}
+.tl-top,
+.tl-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.tl-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  opacity: 0.85;
+}
+.tl-flight {
+  font-weight: 700;
+  font-size: 12px;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tl-time {
+  font-weight: 600;
+  opacity: 0.95;
+  white-space: nowrap;
+}
+.tl-airline,
+.tl-slot {
+  opacity: 0.85;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tl-airport,
+.tl-status {
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Скроллбар основной панели под тёмную тему (без белой полосы) */
+.dashboard-scroll {
+  scrollbar-color: #2d3a4d #0f1419; /* firefox */
+  scrollbar-width: thin;
+}
+.dashboard-scroll::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.dashboard-scroll::-webkit-scrollbar-track {
+  background: #0f1419;
+}
+.dashboard-scroll::-webkit-scrollbar-thumb {
+  background: #2d3a4d;
+  border-radius: 8px;
+  border: 2px solid #0f1419;
+}
+
+/* Глобально: тёмные скроллбары, чтобы справа не было "белой дорожки" */
+html,
+body {
+  scrollbar-color: #2d3a4d #0f1419;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+  background: #0f1419;
+}
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+  background: #2d3a4d;
+  border-radius: 8px;
+  border: 2px solid #0f1419;
+}
+
+/* Внутренние скроллы vis-timeline тоже в тёмную тему */
+.timeline-wrap,
+.timeline-wrap * {
+  scrollbar-color: #2d3a4d #0f1419;
+}
+.timeline-wrap *::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.timeline-wrap *::-webkit-scrollbar-track {
+  background: #0f1419;
+}
+.timeline-wrap *::-webkit-scrollbar-thumb {
+  background: #2d3a4d;
+  border-radius: 8px;
+  border: 2px solid #0f1419;
+}
+
+/* Кнопка открытия календаря у date input в хедере */
+.header-date-input {
+  color-scheme: dark;
+}
+
+.header-date-input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+}
